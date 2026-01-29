@@ -31,20 +31,19 @@ async function fetchProductsFromContentful() {
     // Transform Contentful data to our product format
     products = response.items.map((item, index) => {
       const fields = item.fields;
-
       return {
         id: item.sys.id,
         name: fields.name || fields.title || 'Produk',
-        description: fields.description || '',
+        description: fields.description.content[0].content[0].value || '',
         price: fields.price || 0,
         image: fields.image
       };
     });
 
-    console.log('✅ Products loaded from Contentful:', products.length);
+    console.log('Products loaded from Contentful:', products.length);
     return products;
   } catch (error) {
-    console.error('❌ Error fetching from Contentful:', error);
+    console.error('Error fetching from Contentful:', error);
 
     return [];
   }
