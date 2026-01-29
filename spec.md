@@ -13,3 +13,11 @@ Dalam struktur web ini gunakan section seperti :
 -dan section lain yang sesuai dengan konsep AIDA.
 
 Pada Product List kamu bisa ambil data dari luar dengan kesesuaian harga dengan daerah Jakarta Selatan.
+
+
+Pada product list silahkan consume data dari Contetnful CMS, gunakan library contentful yang sudah proven, jangan membuat fetch sendiri. Dengan credentials :
+- Space ID : sd2pr7kslaqn
+- Access Token : 6wVLqFxUjpXc_3H2Whfc03JaXOX398HQY6Hk72Av0LQ
+- Content Type : rajaSatePadang
+
+Karena sebelumnya sudah mengisi data secara manual, gantilah semua seperti ketentuan line 18-21.

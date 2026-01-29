@@ -21,16 +21,12 @@ Landing page untuk brand makanan **Raja Sate Padang** dengan desain **NeoBrutali
 
 ```
 satepadang/
-├── public/
-│   └── images/
-│       └── products/          # Product images
-│           ├── sate-padang-ori.png    # Used for all sate variants
-│           ├── gulai-kikil.png
-│           └── rendang-daging.png
+├── public/                    # Public assets (currently empty - all images from Contentful)
 ├── index.html                 # Main HTML with all sections
 ├── style.css                  # NeoBrutalism design system
-├── main.js                    # Product data & interactions
+├── main.js                    # Contentful integration & interactions
 ├── package.json               # Dependencies
+├── CHANGELOG.md               # Version history
 └── README.md                  # This file
 ```
 
@@ -40,6 +36,29 @@ satepadang/
 - **Vanilla JavaScript** - No framework dependencies
 - **CSS3** - Custom NeoBrutalism design
 - **Font Awesome 6.5.1** - Icons
+- **Contentful CMS** - Headless CMS for product data
+
+## 🔗 Contentful CMS Integration
+
+Product data is dynamically fetched from **Contentful CMS** using the official `contentful` library.
+
+### Credentials:
+- **Space ID**: `sd2pr7kslaqn`
+- **Access Token**: `6wVLqFxUjpXc_3H2Whfc03JaXOX398HQY6Hk72Av0LQ`
+- **Content Type**: `rajaSatePadang`
+
+### How It Works:
+1. On page load, the app fetches product entries from Contentful
+2. Data is transformed to match our product format
+3. Products are rendered dynamically to the DOM
+4. If Contentful fails, fallback data is used
+
+### Expected Fields in Contentful:
+- `name` (Text) - Product name
+- `description` (Text/Long text) - Product description
+- `price` (Number) - Product price in IDR
+- `image` (Media) - Product image (or use `imageUrl` text field)
+
 
 ## 📱 Sections (AIDA Principle)
 
@@ -102,18 +121,6 @@ npm run build
 ```bash
 npm run preview
 ```
-
-## 🖼️ Images
-
-### Product Images Usage:
-- **Sate Padang Original** → `sate-padang-ori.png`
-- **Sate Padang Spesial** → `sate-padang-ori.png`
-- **Sate Padang Lidah** → `sate-padang-ori.png`
-- **Sate Padang Combo** → `sate-padang-ori.png`
-- **Gulai Kikil** → `gulai-kikil.png`
-- **Rendang Daging** → `rendang-daging.png`
-
-> Semua varian sate menggunakan 1 gambar yang sama (`sate-padang-ori.png`) untuk konsistensi visual.
 
 ## 📋 Product Menu
 

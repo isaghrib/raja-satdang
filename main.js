@@ -1,48 +1,16 @@
-// Product data - simulating real Jakarta Selatan pricing
-const products = [
-  {
-    id: 1,
-    name: "Sate Padang Original",
-    description: "Sate daging sapi empuk dengan kuah kental khas Padang. Paket lengkap dengan lontong dan acar.",
-    price: 35000,
-    image: "/images/products/sate-padang-ori.png"
-  },
-  {
-    id: 2,
-    name: "Sate Padang Spesial",
-    description: "Varian premium dengan potongan daging pilihan dan kuah extra kental. Porsi lebih besar!",
-    price: 45000,
-    image: "/images/products/sate-padang-ori.png"
-  },
-  {
-    id: 3,
-    name: "Sate Padang Lidah",
-    description: "Sate lidah sapi super lembut dengan tekstur yang meleleh di mulut. Limited edition!",
-    price: 55000,
-    image: "/images/products/sate-padang-ori.png"
-  },
-  {
-    id: 4,
-    name: "Sate Padang Combo",
-    description: "Kombinasi sate daging dan jeroan dengan kuah melimpah. Cocok untuk yang lapar berat!",
-    price: 50000,
-    image: "/images/products/sate-padang-ori.png"
-  },
-  {
-    id: 5,
-    name: "Gulai Kikil",
-    description: "Kikil sapi empuk dengan kuah gulai yang gurih dan kaya rempah. Pas banget untuk sahur!",
-    price: 40000,
-    image: "/images/products/gulai-kikil.png"
-  },
-  {
-    id: 6,
-    name: "Rendang Daging",
-    description: "Rendang daging sapi autentik Padang yang empuk dan bumbu meresap sempurna.",
-    price: 48000,
-    image: "/images/products/rendang-daging.png"
-  }
-];
+// ========================================
+// CONTENTFUL CMS INTEGRATION
+// ========================================
+import { createClient } from 'contentful';
+
+// Contentful Client Configuration
+const client = createClient({
+  space: 'sd2pr7kslaqn',
+  accessToken: '6wVLqFxUjpXc_3H2Whfc03JaXOX398HQY6Hk72Av0LQ'
+});
+
+// Global products array (will be populated from Contentful)
+let products = [];
 
 // Format currency to IDR
 function formatPrice(price) {
@@ -53,11 +21,68 @@ function formatPrice(price) {
   }).format(price);
 }
 
-// Render products
-function renderProducts() {
+// Fetch products from Contentful CMS
+async function fetchProductsFromContentful() {
+  try {
+    const response = await client.getEntries({
+      content_type: 'rajaSatePadang'
+    });
+
+    // Transform Contentful data to our product format
+    products = response.items.map((item, index) => {
+      const fields = item.fields;
+
+      return {
+        id: item.sys.id,
+        name: fields.name || fields.title || 'Produk',
+        description: fields.description || '',
+        price: fields.price || 0,
+        image: fields.image
+      };
+    });
+
+    console.log('✅ Products loaded from Contentful:', products.length);
+    return products;
+  } catch (error) {
+    console.error('❌ Error fetching from Contentful:', error);
+
+    return [];
+  }
+}
+
+
+// Render products to DOM
+function renderProducts(productsData) {
   const productList = document.getElementById('product-list');
 
-  products.forEach(product => {
+  // Clear existing content
+  productList.innerHTML = '';
+
+  // Show loading state if data is null
+  if (productsData === null) {
+    productList.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--color-maroon);"></i>
+        <p style="margin-top: 1rem; font-size: 1.2rem;">Memuat produk...</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Show empty state if array is empty
+  if (productsData.length === 0) {
+    productList.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--color-maroon);"></i>
+        <p style="margin-top: 1rem; font-size: 1.2rem;">Gagal memuat produk atau produk belum tersedia.</p>
+        <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 1rem; font-size: 0.9rem; padding: 0.5rem 1rem;">Coba Lagi</button>
+      </div>
+    `;
+    return;
+  }
+
+
+  productsData.forEach(product => {
     const productCard = document.createElement('div');
     productCard.className = 'product-card';
     productCard.innerHTML = `
@@ -67,7 +92,7 @@ function renderProducts() {
         <p class="product-description">${product.description}</p>
         <div class="product-footer">
           <span class="product-price">${formatPrice(product.price)}</span>
-          <button class="product-btn" onclick="addToCart(${product.id})">
+          <button class="product-btn" onclick="window.addToCart('${product.id}')">
             <i class="fas fa-cart-plus"></i> Pesan
           </button>
         </div>
@@ -77,9 +102,14 @@ function renderProducts() {
   });
 }
 
-// Add to cart function (dummy)
+// Add to cart function
 function addToCart(productId) {
   const product = products.find(p => p.id === productId);
+  if (!product) {
+    console.error('Product not found:', productId);
+    return;
+  }
+
   alert(`${product.name} ditambahkan ke keranjang! 🛒\n\nSilakan pilih platform delivery favorit Anda di bawah untuk melanjutkan pesanan.`);
 
   // Scroll to CTA section
@@ -129,8 +159,17 @@ function initAnimations() {
 }
 
 // Initialize everything when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  renderProducts();
+document.addEventListener('DOMContentLoaded', async () => {
+  // Show loading state
+  renderProducts(null);
+
+  // Fetch products from Contentful CMS
+  const productsData = await fetchProductsFromContentful();
+
+  // Render products with fetched data
+  renderProducts(productsData);
+
+  // Initialize animations after products are rendered
   initAnimations();
 
   // Add click handlers for delivery buttons
@@ -146,3 +185,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Make addToCart available globally
 window.addToCart = addToCart;
+
