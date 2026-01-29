@@ -42,10 +42,6 @@ satepadang/
 
 Product data is dynamically fetched from **Contentful CMS** using the official `contentful` library.
 
-### Credentials:
-- **Space ID**: `sd2pr7kslaqn`
-- **Access Token**: `6wVLqFxUjpXc_3H2Whfc03JaXOX398HQY6Hk72Av0LQ`
-- **Content Type**: `rajaSatePadang`
 
 ### How It Works:
 1. On page load, the app fetches product entries from Contentful

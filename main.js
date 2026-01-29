@@ -31,6 +31,7 @@ async function fetchProductsFromContentful() {
     // Transform Contentful data to our product format
     products = response.items.map((item, index) => {
       const fields = item.fields;
+      console.log(fields);
       return {
         id: item.sys.id,
         name: fields.name || fields.title || 'Produk',
